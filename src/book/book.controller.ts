@@ -11,6 +11,7 @@ import {
   Res,
   BadRequestException,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { Book } from 'src/model/book.interface.js';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -18,7 +19,6 @@ import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('books')
 export class BookController {
-
   constructor(private readonly bookService: BookService) {}
 
   @Post()
@@ -28,7 +28,7 @@ export class BookController {
   }
 
   @Get()
-  findAll(): Promise<Book[]> {
+  findAll(): Promise<Book[]> | Observable<Book[]> {
     return this.bookService.findAllViaHttp();
   }
 

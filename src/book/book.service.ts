@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Book } from 'src/model/book.interface.js';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -6,12 +6,15 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class BookService {
-  constructor(private readonly client: HttpService) {}
+  constructor(
+    private readonly client: HttpService,
+    @Inject('API_URL') private readonly base: string,
+  ) {}
 
   create(createBookDto: CreateBookDto) {
     return 'This action adds a new book';
@@ -24,16 +27,14 @@ export class BookService {
     return books;
   }
 
-  findAllViaHttp(): Promise<Book[]> {
-    const url = 'https://api.itbook.store/1.0/new';
+  findAllViaHttp(): Observable<Book[]> {
+    const url = `${this.base}/new`;
     const result$ =
       this.client.get<{ error: string; total: string; books: Book[] }>(url);
 
-    return firstValueFrom(
-      result$.pipe(
-        map((value) => value.data.books),
-        tap((resp) => console.log(resp)),
-      ),
+    return result$.pipe(
+      map((value) => value.data.books),
+      tap((resp) => console.log(resp)),
     );
   }
 
