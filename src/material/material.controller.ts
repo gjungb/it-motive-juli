@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('material')
+@UseGuards(RolesGuard)
 export class MaterialController {
   constructor(private readonly materialService: MaterialService) {}
 
